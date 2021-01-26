@@ -1,8 +1,6 @@
 package com.palo.pod.mycrypto
 
-import android.content.Context
 import android.os.Bundle
-import android.util.Base64
 import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
@@ -11,9 +9,11 @@ import com.google.android.material.snackbar.Snackbar
 import java.io.*
 
 class MainActivity : AppCompatActivity() {
+
     private lateinit var secretTextView: EditText
     private lateinit var dataTextView: EditText
     private lateinit var workingFile: File
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -22,6 +22,7 @@ class MainActivity : AppCompatActivity() {
         secretTextView = findViewById(R.id.inputTextSecret)
         dataTextView = findViewById(R.id.inputTextData)
 
+        // Encrypt button action
         findViewById<MaterialButton>(R.id.btnEncrypt).setOnClickListener { view ->
             if (secretTextView.text.isNotBlank() && dataTextView.text.isNotBlank()) {
                 encryptFile(secretTextView.text.toString(), dataTextView.text.toString())
@@ -33,8 +34,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // Decrypt button action
         findViewById<MaterialButton>(R.id.btnDecrypt).setOnClickListener { view ->
             decryptFile(secretTextView.text.toString(), view)
+            secretTextView.setText("")
+            dataTextView.setText("")
         }
     }
 
@@ -43,12 +47,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun encryptFile(key: String, data: String) {
-        val keyArray = CharArray(key.length)
-        secretTextView.text.getChars(0, secretTextView.length(), keyArray, 0)
-
         val map = Encryption().encrypt(
             data.toByteArray(Charsets.UTF_8),
-            secretTextView.text.toString().toCharArray()
+            key.toCharArray()
         )
 
         // Write to file
